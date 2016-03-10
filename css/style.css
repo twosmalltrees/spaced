@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #3498db;
+  overflow: hidden;
+}
+
+.rocketDiv {
+  width: 40px;
+  position: absolute;
+  bottom : 0px;
+  left: 400px;
+  transition: transform 0.3s, bottom 0.1s, left 0.1s;
+}
+
+.rocket {
+  width: 100%;
+}
+
+.rocketFlame {
+  transition: transform 1s;
+  position: absolute;
+  width: 100%;
+  top: 78px;
+  left: 0px;
+  z-index: -1;
+}
+
+.bullet {
+  position: absolute;
+  width: 3px;
+  height: 15px;
+  background-color: white;
+  transition: left 0.1s, bottom 0.1s;
+  z-index: -1;
+}
+
+.enemy {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  color: white;
+  font-size: 25px;
+  z-index: 1;
+}
