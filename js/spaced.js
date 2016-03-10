@@ -182,8 +182,8 @@ World = {
 
         if (distance < bulletRadius + enemyRadius) {
             Enemy.explode(World.enemies[k]);
-            World.enemies.splice(k,1);
-            World.projectiles.splice(m,1);
+            World.enemies = World.enemies.splice(k,1);
+            World.projectiles = World.projectiles.splice(m,1);
             World.score += 1;
             World.updateScore();
         }
