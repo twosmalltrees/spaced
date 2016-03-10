@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat:700);
+
 body {
   margin: 0;
   padding: 0;
@@ -38,10 +40,26 @@ body {
 }
 
 .enemy {
+  transition: transform 0.4s;
   position: absolute;
   width: 25px;
   height: 25px;
   color: white;
   font-size: 25px;
   z-index: 1;
+}
+
+.explosion {
+  width: 100%;
+}
+
+.scoreCount {
+  position: absolute;
+  top: 250px;
+  width: 100vw;
+  height: 50vh;
+  font-size: 200px;
+  font-family: "Montserrat";
+  text-align: center;
+  color: rgba(0, 0, 0, 0.08);
 }

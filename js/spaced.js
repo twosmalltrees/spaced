@@ -10,11 +10,11 @@ Rocket = {
   direction: 0,
   rate_of_acceleration: 1,
   rate_of_deceleration: 1,
-  position: [400, 0],
+  position: [700, 0],
   image: $("<img class='rocket' src='images/rocket.png'><img class='rocketFlame' src='images/rocketFlame.png'>"),
   fireEngines: function() {
     // Run on up button keydown.
-    if (this.velocity <= 10) {
+    if (this.velocity <= 15) {
       this.velocity += 1;
       $('.rocketFlame').css({
         'transform': 'scaleY(4) translateY(5px)'
@@ -105,6 +105,13 @@ Enemy = {
     // Append the enemy to the DOM
     $('body').append(enemy.image);
     return enemy;
+  },
+  explode: function(enemy) {
+    enemy.image.html("<img class='explosion' src='images/explosion.png'>");
+    enemy.image.css({'transform' : 'scale(1.5,1.5)'});
+    setTimeout(function() {
+      enemy.image.css({'opacity' : '0'});
+    }, 250);
   }
 };
 
@@ -137,9 +144,15 @@ World = {
   enemies: [],
   // Stores a collection of bullets.
   projectiles: [],
+  // Stores the current score.
+  score: 0,
   // Sets up an interval to call renderPage every 40ms (25fps);
   start: function() {
     setInterval(this.renderPage, 30);
+  },
+  // Updates the users score on screen.
+  updateScore: function() {
+    $('.scoreCount').html(World.score);
   },
 
   renderPage: function() {
@@ -162,8 +175,9 @@ World = {
         var distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < bulletRadius + enemyRadius) {
-            World.enemies[k].image.css({'color': 'red'});
-            console.log("detected collision");
+            Enemy.explode(World.enemies[k]);
+            World.score += 1;
+            World.updateScore();
         }
       }
     }
