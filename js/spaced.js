@@ -127,6 +127,7 @@ Guns = {
       position: [Rocket.position[0] + 19, Rocket.position[1] + 40],
       velocity: Rocket.velocity,
       direction: Rocket.direction,
+      lifetime: 0,
       bulletType: type,
       image: $("<div class='bullet " + type + "'></div>")
     };
@@ -182,8 +183,9 @@ World = {
 
         if (distance < bulletRadius + enemyRadius) {
             Enemy.explode(World.enemies[k]);
-            World.enemies = World.enemies.splice(k,1);
-            World.projectiles = World.projectiles.splice(m,1);
+            thisBullet.image.css({'display' : 'none'});
+            World.enemies.splice(k,1);
+            World.projectiles.splice(m,1);
             World.score += 1;
             World.updateScore();
         }
