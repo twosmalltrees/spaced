@@ -3,7 +3,7 @@
 var airResistanceInterval;
 var spawnEnemiesInterval;
 
-
+///////// ------------ THE ROCKET SHIP ------------ ////////
 
 Rocket = {
   velocity: 0,
@@ -53,6 +53,9 @@ Rocket = {
     return laser;
   }
 };
+
+
+///////// ------------ THE ENEMIES ------------ ////////
 
 Enemy = {
   // Creates a new enemy
@@ -115,6 +118,8 @@ Enemy = {
   }
 };
 
+///////// ----------------- GUNS ----------------- ////////
+
 Guns = {
   bulletFactory: function(type) {
     // Creates a new bullet
@@ -139,6 +144,8 @@ Guns = {
   }
 };
 
+///////// ----------------- WORLD ----------------- ////////
+
 World = {
   // Stores a collection of all the enemies.
   enemies: [],
@@ -156,7 +163,6 @@ World = {
   },
 
   renderPage: function() {
-
     // DETECT COLLISIONS - loop through World.projectiles and World.enemies and check collisions.
     // Thanks to MDN for this collision detection algorithm.
     for (var k = 0; k < World.enemies.length; k++) {
@@ -176,6 +182,8 @@ World = {
 
         if (distance < bulletRadius + enemyRadius) {
             Enemy.explode(World.enemies[k]);
+            World.enemies.splice(k,1);
+            World.projectiles.splice(m,1);
             World.score += 1;
             World.updateScore();
         }
