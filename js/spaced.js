@@ -156,7 +156,7 @@ World = {
   score: 0,
   // Sets up an interval to call renderPage every 40ms (25fps);
   start: function() {
-    setInterval(this.renderPage, 30);
+    requestAnimationFrame(this.renderPage);
   },
   // Updates the users score on screen.
   updateScore: function() {
@@ -209,6 +209,15 @@ World = {
       velocity_components = World.breakDownVelocity(bullet.velocity, bullet.direction);
       bullet.position[0] += velocity_components[0];
       bullet.position[1] += velocity_components[1];
+
+      // Checks bullet lifetime. If it has existed for longer than 150 iterations, it is spliced from the World.projectiles array so as to not track bullets flying miles off screen.
+      if (bullet.lifetime < 150) {
+          bullet.lifetime ++;
+      } else {
+        World.projectiles.splice(i, 1);
+        bullet.image.css({'display': 'none'});
+      }
+      // Update posiiton of the element.
       bullet.image.css({
         'left': bullet.position[0] + 'px',
         'bottom': bullet.position[1] + 'px'
@@ -226,7 +235,12 @@ World = {
         'left': enemy.position[0] + 'px',
         'top': enemy.position[1] + 'px'
       });
+      // Stop tracking enemies if they stray outside the screen
+      if (enemy.position[0] < -50 || enemy.position[0] > $(window).width() + 50 || enemy.position[1] < -50 || enemy.position [1] > $(window).height + 50) {
+        World.enemies.splice(j, 1);
+      }
     }
+    window.requestAnimationFrame(World.renderPage);
   },
 
   breakDownVelocity: function(velocity, direction) {
