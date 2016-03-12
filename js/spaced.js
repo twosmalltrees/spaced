@@ -1,6 +1,7 @@
 /// Global variables ///
 
 var spawnEnemiesInterval;
+var lastBulletShot = new Date();
 
 ///////// ------------ THE ROCKET SHIP ------------ ////////
 
@@ -314,8 +315,12 @@ var UserInteraction = {
     }
     // Fire Laser!
     if (UserInteraction.keysPressed[32]) {
-      var bullet = Rocket.fireLasers();
-      World.projectiles.push(bullet);
+      var currentTime = new Date();
+      if (currentTime - lastBulletShot > 100) {
+        var bullet = Rocket.fireLasers();
+        World.projectiles.push(bullet);
+        lastBulletShot = currentTime;
+      }
     }
     // Reduce rocket flame size on keyup, and set air resistance interval up again.
     if (UserInteraction.keysPressed[38] === false) {
