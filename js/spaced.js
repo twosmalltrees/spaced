@@ -217,7 +217,7 @@ World = {
         World.projectiles.splice(i, 1);
         bullet.image.css({'display': 'none'});
       }
-      // Update posiiton of the element.
+      // Update posiiton of the bullet on screen.
       bullet.image.css({
         'left': bullet.position[0] + 'px',
         'bottom': bullet.position[1] + 'px'
