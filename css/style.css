@@ -14,7 +14,7 @@ body {
   position: absolute;
   bottom : 0px;
   left: 400px;
-  transition: transform 0.3s, bottom 0.1s, left 0.1s;
+  transition: transform 0s, bottom 0.1s, left 0.1s;
 }
 
 .rocket {

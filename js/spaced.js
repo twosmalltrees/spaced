@@ -1,6 +1,5 @@
 /// Global variables ///
 
-var airResistanceInterval;
 var spawnEnemiesInterval;
 
 ///////// ------------ THE ROCKET SHIP ------------ ////////
@@ -8,14 +7,13 @@ var spawnEnemiesInterval;
 Rocket = {
   velocity: 0,
   direction: 0,
-  rate_of_acceleration: 1,
-  rate_of_deceleration: 1,
   position: [700, 0],
   image: $("<img class='rocket' src='images/rocket.png'><img class='rocketFlame' src='images/rocketFlame.png'>"),
   fireEngines: function() {
     // Run on up button keydown.
-    if (this.velocity <= 15) {
-      this.velocity += 1;
+    console.log(this.velocity);
+    if (this.velocity <= 12) {
+      this.velocity += 0.5;
       $('.rocketFlame').css({
         'transform': 'scaleY(4) translateY(5px)'
       });
@@ -24,12 +22,12 @@ Rocket = {
 
   steer: function(rotation) {
     if (rotation === 'clockwise') {
-      this.direction += 15;
+      this.direction += 3;
       $('.rocketDiv').css({
         'transform': 'rotate(' + this.direction + 'deg)'
       });
     } else if (rotation === 'counterClockwise') {
-      this.direction -= 15;
+      this.direction -= 3;
       $('.rocketDiv').css({
         'transform': 'rotate(' + this.direction + 'deg)'
       });
@@ -39,11 +37,9 @@ Rocket = {
   airResistance: function() {
     // Run on keyup, and while velocity is greater than 0.
     if (Rocket.velocity > 0.15) {
-      Rocket.velocity = Rocket.velocity - 0.15;
+      Rocket.velocity = Rocket.velocity - 0.1;
     } else if (Rocket.velocity < 0.15 && Rocket.velocity > 0) {
       Rocket.velocity = 0;
-    } else {
-      clearInterval(airResistanceInterval);
     }
   },
 
@@ -111,9 +107,13 @@ Enemy = {
   },
   explode: function(enemy) {
     enemy.image.html("<img class='explosion' src='images/explosion.png'>");
-    enemy.image.css({'transform' : 'scale(1.5,1.5)'});
+    enemy.image.css({
+      'transform': 'scale(1.5,1.5)'
+    });
     setTimeout(function() {
-      enemy.image.css({'opacity' : '0'});
+      enemy.image.css({
+        'opacity': '0'
+      });
     }, 250);
   }
 };
@@ -164,16 +164,19 @@ World = {
   },
 
   renderPage: function() {
+    // First, action all user button presses:
+    UserInteraction.actionUserInput();
+
     // DETECT COLLISIONS - loop through World.projectiles and World.enemies and check collisions.
     // Thanks to MDN for this collision detection algorithm.
     for (var k = 0; k < World.enemies.length; k++) {
       for (var m = 0; m < World.projectiles.length; m++) {
         var thisEnemy = World.enemies[k];
-        var enemyXPos= thisEnemy.image.offset().left;
-        var enemyYPos= thisEnemy.image.offset().top;
+        var enemyXPos = thisEnemy.image.offset().left;
+        var enemyYPos = thisEnemy.image.offset().top;
         var thisBullet = World.projectiles[m];
-        var bulletXPos= thisBullet.image.offset().left;
-        var bulletYPos= thisBullet.image.offset().top;
+        var bulletXPos = thisBullet.image.offset().left;
+        var bulletYPos = thisBullet.image.offset().top;
         var bulletRadius = 5;
         var enemyRadius = 12.5;
 
@@ -182,12 +185,14 @@ World = {
         var distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < bulletRadius + enemyRadius) {
-            Enemy.explode(World.enemies[k]);
-            thisBullet.image.css({'display' : 'none'});
-            World.enemies.splice(k,1);
-            World.projectiles.splice(m,1);
-            World.score += 1;
-            World.updateScore();
+          Enemy.explode(World.enemies[k]);
+          thisBullet.image.css({
+            'display': 'none'
+          });
+          World.enemies.splice(k, 1);
+          World.projectiles.splice(m, 1);
+          World.score += 1;
+          World.updateScore();
         }
       }
     }
@@ -212,10 +217,12 @@ World = {
 
       // Checks bullet lifetime. If it has existed for longer than 150 iterations, it is spliced from the World.projectiles array so as to not track bullets flying miles off screen.
       if (bullet.lifetime < 150) {
-          bullet.lifetime ++;
+        bullet.lifetime++;
       } else {
         World.projectiles.splice(i, 1);
-        bullet.image.css({'display': 'none'});
+        bullet.image.css({
+          'display': 'none'
+        });
       }
       // Update posiiton of the bullet on screen.
       bullet.image.css({
@@ -236,7 +243,7 @@ World = {
         'top': enemy.position[1] + 'px'
       });
       // Stop tracking enemies if they stray outside the screen
-      if (enemy.position[0] < -50 || enemy.position[0] > $(window).width() + 50 || enemy.position[1] < -50 || enemy.position [1] > $(window).height + 50) {
+      if (enemy.position[0] < -50 || enemy.position[0] > $(window).width() + 50 || enemy.position[1] < -50 || enemy.position[1] > $(window).height + 50) {
         World.enemies.splice(j, 1);
       }
     }
@@ -277,48 +284,52 @@ World = {
   },
 };
 
-
-$(document).ready(function() {
-
-  // Fire Engines, stop air resistance function.
-  $(window).on('keydown', function(event) {
-    if (event.which === 38) {
-      clearInterval(airResistanceInterval);
+// Controls all the user input, key listeners logic etc
+var UserInteraction = {
+  keysPressed: [],
+  addKeyboardListeners: function() {
+    // When key is pressed, sets it's value in array to true.
+    $(window).on("keydown", function(event) {
+      UserInteraction.keysPressed[event.keyCode] = true;
+    });
+    // When released, value is set back to false.
+    $(window).on("keyup", function(event) {
+      UserInteraction.keysPressed[event.keyCode] = false;
+    });
+  },
+  actionUserInput: function() {
+    // Fire Engines, stop air resistance function.
+    if (UserInteraction.keysPressed[38]) {
       Rocket.fireEngines();
     }
-  });
-
-  // Counter clockwise turn on left button press
-  $(window).on('keydown', function(event) {
-    if (event.which === 37) {
+    // Counter clockwise turn on left button press
+    if (UserInteraction.keysPressed[37]) {
       Rocket.steer('counterClockwise');
     }
-  });
-
-  // Clockwise turn on right button press
-  $(window).on('keydown', function(event) {
-    if (event.which === 39) {
+    //Clockwise turn on right button press
+    if (UserInteraction.keysPressed[39]) {
       Rocket.steer('clockwise');
     }
-  });
-
-  // Fire Laser!
-  $(window).on('keydown', function(event) {
-    if (event.which === 32) {
+    // Fire Laser!
+    if (UserInteraction.keysPressed[32]) {
       var bullet = Rocket.fireLasers();
       World.projectiles.push(bullet);
     }
-  });
-
-  // Animates the rocket engine
-  $(window).on('keyup', function(event) {
-    if (event.which === 38) {
+    // Reduce rocket flame size on keyup, and set air resistance interval up again.
+    if (UserInteraction.keysPressed[38] === false) {
+      Rocket.airResistance();
+      console.log("Air resistance was called");
       $('.rocketFlame').css({
         'transform': 'scaleY(1.5) translateY(0px)'
       });
-      airResistanceInterval = setInterval(Rocket.airResistance, 20);
     }
-  });
+  }
+};
+
+
+$(document).ready(function() {
+
+  UserInteraction.addKeyboardListeners();
 
   // Sets up spawn enemies interval
   setTimeout(function() {
