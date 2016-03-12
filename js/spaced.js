@@ -65,6 +65,7 @@ Enemy = {
       position: [],
       velocity: 1,
       direction: 0,
+      size: 25,
     };
 
     // Assign image based on randomly generated enemy type
@@ -135,6 +136,7 @@ Guns = {
       fireRate: 0,
       lifetime: 0,
       bulletType: type,
+      width: 5,
       image: $("<div class='bullet " + type + "'></div>")
     };
     // Set speed relative to spaceship based on type of bullet
@@ -180,11 +182,11 @@ World = {
       for (var m = 0; m < World.projectiles.length; m++) {
         if (World.enemies[k]) { // This loop is important, prevents from attempting to check collisions on World.enemies[k] if it was the most recently generated enemy and has been hit and destroyed already, and therefore World.enemies[k] no longer exists.
           var thisEnemy = World.enemies[k];
-          var enemyXPos = thisEnemy.image.offset().left;
-          var enemyYPos = thisEnemy.image.offset().top;
+          var enemyXPos = thisEnemy.image.offset().left + (thisEnemy.size/2);
+          var enemyYPos = thisEnemy.image.offset().top + (thisEnemy.size/2);
           var thisBullet = World.projectiles[m];
-          var bulletXPos = thisBullet.image.offset().left;
-          var bulletYPos = thisBullet.image.offset().top;
+          var bulletXPos = thisBullet.image.offset().left + (thisBullet.width/2);
+          var bulletYPos = thisBullet.image.offset().top + (thisBullet.width/2);
           var bulletRadius = 5;
           var enemyRadius = 12.5;
 
