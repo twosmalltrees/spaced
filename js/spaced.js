@@ -215,7 +215,7 @@ World = {
     //TODO: Pull this out this to a seperate Wold.getPosition (or something) method so it can be used for enemies/bullets? etc...
 
     // Allows for flyThrough walls on X axis
-    if (Rocket.position[0] < 0) {
+    if (Rocket.position[0] < -150) {
       Rocket.position[0] = $(window).width() + ((Rocket.position[0] + velocity_components[0] + 150) % $(window).width());
     } else if (Rocket.position[0] > $(window).width() + 50){
       console.log("to right");
@@ -225,7 +225,7 @@ World = {
     }
 
     // Allows for flyThrough floor/ceiling on Y axis
-    if (Rocket.position[1] < 0) {
+    if (Rocket.position[1] < -150) {
       Rocket.position[1] = $(window).height() + ((Rocket.position[1] + velocity_components[1] + 150) % $(window).height());
     } else if (Rocket.position[1] > $(window).height() + 50){
       console.log("to right");
