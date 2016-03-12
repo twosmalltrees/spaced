@@ -44,10 +44,15 @@ Rocket = {
     }
   },
 
-  fireLasers: function() {
-    var laser = Guns.bulletFactory("laser");
-    $('body').append(laser.image);
-    return laser;
+  fireWeapon: function() {
+      var bullet = Guns.bulletFactory("laser");
+      var fireRate = bullet.fireRate;
+      var currentTime = new Date();
+      if (currentTime - lastBulletShot > fireRate) {
+        $('body').append(bullet.image);
+        lastBulletShot = currentTime;
+        World.projectiles.push(bullet);
+      }
   }
 };
 
@@ -128,6 +133,7 @@ Guns = {
       position: [Rocket.position[0] + 19, Rocket.position[1] + 40],
       velocity: Rocket.velocity,
       direction: Rocket.direction,
+      fireRate: 0,
       lifetime: 0,
       bulletType: type,
       image: $("<div class='bullet " + type + "'></div>")
@@ -135,6 +141,7 @@ Guns = {
     // Set speed relative to spaceship based on type of bullet
     if (bullet.bulletType === "laser") {
       bullet.velocity += 10;
+      bullet.fireRate = 90;
     }
     // Set starting position of bullet at spaceships location
     bullet.image.css({
@@ -315,12 +322,7 @@ var UserInteraction = {
     }
     // Fire Laser!
     if (UserInteraction.keysPressed[32]) {
-      var currentTime = new Date();
-      if (currentTime - lastBulletShot > 100) {
-        var bullet = Rocket.fireLasers();
-        World.projectiles.push(bullet);
-        lastBulletShot = currentTime;
-      }
+        Rocket.fireWeapon();
     }
     // Reduce rocket flame size on keyup, and set air resistance interval up again.
     if (UserInteraction.keysPressed[38] === false) {
