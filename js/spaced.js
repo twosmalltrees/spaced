@@ -1,7 +1,6 @@
 /// Global variables ///
 
 var spawnEnemiesInterval;
-var lastBulletShot = new Date();
 
 ///////// ------------ THE ROCKET SHIP ------------ ////////
 
@@ -9,6 +8,7 @@ Rocket = {
   velocity: 0,
   direction: 0,
   position: [700, 0],
+  lastBulletShot: new Date(),
   image: $("<img class='rocket' src='images/rocket.png'><img class='rocketFlame' src='images/rocketFlame.png'>"),
   fireEngines: function() {
     // Run on up button keydown.
@@ -48,9 +48,9 @@ Rocket = {
       var bullet = Guns.bulletFactory("laser");
       var fireRate = bullet.fireRate;
       var currentTime = new Date();
-      if (currentTime - lastBulletShot > fireRate) {
+      if (currentTime - this.lastBulletShot > fireRate) {
         $('body').append(bullet.image);
-        lastBulletShot = currentTime;
+        this.lastBulletShot = currentTime;
         World.projectiles.push(bullet);
       }
   }
