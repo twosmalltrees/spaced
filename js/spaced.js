@@ -171,28 +171,30 @@ World = {
     // Thanks to MDN for this collision detection algorithm.
     for (var k = 0; k < World.enemies.length; k++) {
       for (var m = 0; m < World.projectiles.length; m++) {
-        var thisEnemy = World.enemies[k];
-        var enemyXPos = thisEnemy.image.offset().left;
-        var enemyYPos = thisEnemy.image.offset().top;
-        var thisBullet = World.projectiles[m];
-        var bulletXPos = thisBullet.image.offset().left;
-        var bulletYPos = thisBullet.image.offset().top;
-        var bulletRadius = 5;
-        var enemyRadius = 12.5;
+        if (World.enemies[k]) { // This loop is important, prevents from attempting to check collisions on World.enemies[k] if it was the most recently generated enemy and has been hit and destroyed already, and therefore World.enemies[k] no longer exists.
+          var thisEnemy = World.enemies[k];
+          var enemyXPos = thisEnemy.image.offset().left;
+          var enemyYPos = thisEnemy.image.offset().top;
+          var thisBullet = World.projectiles[m];
+          var bulletXPos = thisBullet.image.offset().left;
+          var bulletYPos = thisBullet.image.offset().top;
+          var bulletRadius = 5;
+          var enemyRadius = 12.5;
 
-        var dx = enemyXPos - bulletXPos;
-        var dy = enemyYPos - bulletYPos;
-        var distance = Math.sqrt(dx * dx + dy * dy);
+          var dx = enemyXPos - bulletXPos;
+          var dy = enemyYPos - bulletYPos;
+          var distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < bulletRadius + enemyRadius) {
-          Enemy.explode(World.enemies[k]);
-          thisBullet.image.css({
-            'display': 'none'
-          });
-          World.enemies.splice(k, 1);
-          World.projectiles.splice(m, 1);
-          World.score += 1;
-          World.updateScore();
+          if (distance < bulletRadius + enemyRadius) {
+            Enemy.explode(World.enemies[k]);
+            thisBullet.image.css({
+              'display': 'none'
+            });
+            World.enemies.splice(k, 1);
+            World.projectiles.splice(m, 1);
+            World.score += 1;
+            World.updateScore();
+          }
         }
       }
     }
@@ -334,8 +336,10 @@ $(document).ready(function() {
   // Sets up spawn enemies interval
   setTimeout(function() {
     setInterval(function() {
-      var enemy = Enemy.enemyFactory();
-      World.enemies.push(enemy);
+      if (World.enemies.length < 15) {
+        var enemy = Enemy.enemyFactory();
+        World.enemies.push(enemy);
+      }
     }, 2000);
   }, 1000);
 
