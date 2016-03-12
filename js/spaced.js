@@ -8,11 +8,10 @@ Rocket = {
   velocity: 0,
   direction: 0,
   position: [700, 0],
-  lastBulletShot: new Date(),
+  lastBulletFired: new Date(),
   image: $("<img class='rocket' src='images/rocket.png'><img class='rocketFlame' src='images/rocketFlame.png'>"),
   fireEngines: function() {
     // Run on up button keydown.
-    console.log(this.velocity);
     if (this.velocity <= 12) {
       this.velocity += 0.5;
       $('.rocketFlame').css({
@@ -48,9 +47,9 @@ Rocket = {
       var bullet = Guns.bulletFactory("laser");
       var fireRate = bullet.fireRate;
       var currentTime = new Date();
-      if (currentTime - this.lastBulletShot > fireRate) {
+      if (currentTime - this.lastBulletFired > fireRate) {
         $('body').append(bullet.image);
-        this.lastBulletShot = currentTime;
+        this.lastBulletFired = currentTime;
         World.projectiles.push(bullet);
       }
   }
@@ -210,8 +209,30 @@ World = {
     // ROCKET - checks and update the position of the rocket
     var rocket_image_div = Rocket.image;
     var velocity_components = World.breakDownVelocity(Rocket.velocity, Rocket.direction);
-    Rocket.position[0] += velocity_components[0];
-    Rocket.position[1] += velocity_components[1];
+
+    //TODO: Pull this out this to a seperate Wold.getPosition (or something) method so it can be used for enemies/bullets? etc...
+
+    // Allows for flyThrough walls on X axis
+    if (Rocket.position[0] < 0) {
+      Rocket.position[0] = $(window).width() + ((Rocket.position[0] + velocity_components[0] + 150) % $(window).width());
+    } else if (Rocket.position[0] > $(window).width() + 50){
+      console.log("to right");
+      Rocket.position[0] = ((Rocket.position[0] + velocity_components[0]) % $(window).width()) - 150;
+    } else {
+      Rocket.position[0] = Rocket.position[0] + velocity_components[0];
+    }
+
+    // Allows for flyThrough floor/ceiling on Y axis
+    if (Rocket.position[1] < 0) {
+      Rocket.position[1] = $(window).height() + ((Rocket.position[1] + velocity_components[1] + 150) % $(window).height());
+    } else if (Rocket.position[1] > $(window).height() + 50){
+      console.log("to right");
+      Rocket.position[1] = ((Rocket.position[1] + velocity_components[1]) % $(window).height()) - 150;
+    } else {
+      Rocket.position[1] = Rocket.position[1] + velocity_components[1];
+    }
+
+
     $('.rocketDiv').css({
       'left': Rocket.position[0] + 'px',
       'bottom': Rocket.position[1] + 'px'
@@ -327,7 +348,6 @@ var UserInteraction = {
     // Reduce rocket flame size on keyup, and set air resistance interval up again.
     if (UserInteraction.keysPressed[38] === false) {
       Rocket.airResistance();
-      console.log("Air resistance was called");
       $('.rocketFlame').css({
         'transform': 'scaleY(1.5) translateY(0px)'
       });
